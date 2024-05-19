@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InputFieldBatteryController : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class InputFieldBatteryController : MonoBehaviour
     [SerializeField] private GameObject score;
     private DraggableItem controller;
     private SpriteRenderer spriteRenderer;
+    [SerializeField] private AudioSource batterySound;
 
     private void Awake()
     {
@@ -31,9 +33,9 @@ public class InputFieldBatteryController : MonoBehaviour
     {
         if (controller.IsPlaced())
         {
+            batterySound.Play();
             spriteRenderer.enabled = false;
             enabled = false;
         }
-
     }
 }

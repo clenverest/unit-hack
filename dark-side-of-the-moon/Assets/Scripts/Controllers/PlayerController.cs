@@ -11,16 +11,26 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject backlight1;
     [SerializeField] private GameObject backlight2;
     private bool isSwitchUsed;
+    [SerializeField] private GameObject telephone;
+    private TelephoneController telephoneController;
+    [SerializeField] private GameObject endController;
+    private EndGameController endGameController;
 
     private void Start()
     {
         controller1 = character1.GetComponent<CharacterController>();
         controller2 = character2.GetComponent<CharacterController>();
+        telephoneController = telephone.GetComponent<TelephoneController>();
+        endGameController = endController.GetComponent<EndGameController>();
     }
 
-    // Update is called once per frame
     private void Update()
     {
+        if (!telephoneController.IsDialogue1Activated() || endGameController.IsEndGame())
+        {
+            return;
+        }
+
         if(Input.GetKeyDown(KeyCode.Q))
         {
             isSwitchUsed = true;

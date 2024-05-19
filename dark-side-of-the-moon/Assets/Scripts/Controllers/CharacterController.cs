@@ -9,18 +9,18 @@ public class CharacterController : MonoBehaviour
     private float movementSpeed;
     private Rigidbody2D rigidbody;
     private Animator animator;
-    //private DialogueManager dialogueManager;
+    private DialogueManager dialogueManager;
     private bool isActive = true;
 
     private void Awake()
     {
-        //dialogueManager = FindObjectOfType<DialogueManager>();
+        dialogueManager = FindObjectOfType<DialogueManager>();
     }
 
     void Start()
     {
         rigidbody = GetComponent<Rigidbody2D>();
-        //animator = GetComponent<Animator>();
+        animator = GetComponent<Animator>();
     }
 
     void Update()
@@ -32,11 +32,16 @@ public class CharacterController : MonoBehaviour
         movementSpeed = Mathf.Clamp(direction.magnitude, 0.0f, 1.0f);
         direction.Normalize();
         FlipPlayer();
-        //Animate();
-        //if (dialogueManager != null)
-        //{
-        //    InteractionWithDialog();
-        //}
+        Animate();
+        if (dialogueManager != null)
+        {
+            InteractionWithDialog();
+        }
+
+        if (isEndGame)
+        {
+            MoveToPosition();
+        }
     }
 
     private void FixedUpdate()
@@ -45,7 +50,7 @@ public class CharacterController : MonoBehaviour
             rigidbody.MovePosition(rigidbody.position + direction * speed * Time.fixedDeltaTime);
     }
 
-    private bool facingRight = true;
+    private bool facingRight = false;
     private void Flip()
     {
         facingRight = !facingRight;
@@ -66,33 +71,32 @@ public class CharacterController : MonoBehaviour
         }
     }
 
-    //private void Animate()
-    //{
-    //    if (direction != Vector2.zero)
-    //    {
-    //        animator.SetFloat("Horizontal", direction.x);
-    //        animator.SetFloat("Vertical", direction.y);
-    //    }
-    //    animator.SetFloat("Speed", movementSpeed);
-    //}
+    private void Animate()
+    {
+        if (direction != Vector2.zero)
+        {
+            animator.SetFloat("Horizontal", direction.x);
+            animator.SetFloat("Vertical", direction.y);
+        }
+        animator.SetFloat("Speed", movementSpeed);
+    }
 
-    //private void InteractionWithDialog()
-    //{
-    //    if (dialogueManager.IsDialogueActive())
-    //    {
-    //        isActive = false;
-    //        animator.SetBool("IsDialogueActive", true);
-    //        direction = Vector2.zero;
-    //    }
-    //    else if (direction != Vector2.zero)
-    //    {
-    //        animator.SetBool("IsDialogueActive", false);
-    //    }
-    //    else
-    //    {
-    //        isActive = true;
-    //    }
-    //}
+    private void InteractionWithDialog()
+    {
+        if (dialogueManager.IsDialogueActive())
+        {
+            isActive = false;
+            direction = Vector2.zero;
+        }
+        //else if (direction != Vector2.zero)
+        //{
+        //    animator.SetBool("IsDialogueActive", false);
+        //}
+        else
+        {
+            isActive = true;
+        }
+    }
 
     [SerializeField] private bool isFreeze = true;
 
@@ -107,5 +111,23 @@ public class CharacterController : MonoBehaviour
     public void Unfreeze()
     {
         isFreeze = false;
+    }
+
+    private bool isEndGame = false;
+    private Vector2 endPosition;
+
+    public void EndGame(Vector2 position)
+    {
+        isEndGame = true;
+        endPosition = position;
+    }
+
+    private void MoveToPosition()
+    {
+        rigidbody.bodyType = RigidbodyType2D.Kinematic;
+        transform.position = Vector2.MoveTowards(transform.position, endPosition, Time.fixedDeltaTime);
+        animator.SetFloat("Horizontal", 0);
+        animator.SetFloat("Vertical", -1);
+        animator.SetFloat("Speed", 1);
     }
 }

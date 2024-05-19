@@ -9,6 +9,7 @@ public class DoorController : MonoBehaviour
     [SerializeField] private GameObject playerController;
     private PlayerController pController;
     [SerializeField] Dialogue dialogue;
+    [SerializeField] private AudioSource doorSound;
 
     private void Awake()
     {
@@ -24,6 +25,7 @@ public class DoorController : MonoBehaviour
     {
         if (collision.collider.CompareTag("Character2"))
         {
+            doorSound.Play();
             if (room1.activeInHierarchy)
             {
                 room1.SetActive(false);
@@ -40,4 +42,5 @@ public class DoorController : MonoBehaviour
             TriggerDialogue(dialogue);
         }
     }
+
 }
